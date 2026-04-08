@@ -1,0 +1,6 @@
+{
+  "name": "QRadar_SQL_Injection_Detection",
+  "content": "SELECT * FROM events WHERE (UTF8(payload) ILIKE '%UNION SELECT%' OR UTF8(payload) ILIKE '%OR 1=1%') AND deviceType = 'Web Server'",
+  "severity": 8,
+  "description": "Web trafikində SQL inyeksiyası patternlərini aşkarlayır."
+}
