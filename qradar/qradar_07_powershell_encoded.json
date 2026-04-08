@@ -1,0 +1,6 @@
+{
+  "name": "QRadar_Suspicious_PowerShell",
+  "content": "SELECT * FROM events WHERE ProcessName = 'powershell.exe' AND (CommandLine ILIKE '%-enc%' OR CommandLine ILIKE '%-EncodedCommand%')",
+  "severity": 7,
+  "description": "Gizlədilmiş (Encoded) PowerShell komandalarının icrasını tutur."
+}
