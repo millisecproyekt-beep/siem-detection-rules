@@ -1,0 +1,6 @@
+{
+  "name": "QRadar_Credential_Dumping",
+  "content": "SELECT * FROM events WHERE qid = 1234567 AND TargetProcess = 'lsass.exe' AND AccessLevel = '0x1fffff'",
+  "severity": 10,
+  "description": "LSASS prosesinin yaddaşına şübhəli müraciəti tutur."
+}
