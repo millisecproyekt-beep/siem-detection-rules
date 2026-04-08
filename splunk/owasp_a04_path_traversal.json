@@ -1,0 +1,8 @@
+{
+  "name": "OWASP_A04_Path_Traversal_Detection",
+  "search": "index=\"web_logs\" method IN (\"GET\", \"POST\", \"HEAD\") | search uri=\"*/etc/passwd*\" OR uri=\"*../*\" OR uri=\"*..\\\\*\" OR uri=\"*/config/*\" OR uri=\"*/backup/*\" | iplocation clientip | fillnull value=\"Unknown\" Country, City | stats count as violation_count, values(uri) as attempted_paths, latest(_time) as last_seen by clientip, Country, City | fieldformat last_seen = strftime(last_seen, \"%Y-%m-%d %H:%M:%S\") | eval OWASP_Category=\"A04:2021-Insecure Design\", Alert=\"Path Traversal / Qadağan Olunmuş Qovluğa Giriş\" | sort - last_seen | table last_seen, clientip, Country, City, violation_count, attempted_paths, Alert",
+  "cron_schedule": "*/15 * * * *",
+  "description": "Serverin həssas qovluqlarına və ya kataloqdan kənara çıxma (dot-dot-slash) cəhdlərini aşkarlayır.",
+  "is_visible": true,
+  "disabled": false
+}
