@@ -1,0 +1,8 @@
+{
+  "name": "OWASP_A03_Injection_Attack_Detection",
+  "search": "index=\"web_logs\" method IN (\"GET\", \"POST\") | search uri=\"*<script>*\" OR uri=\"*%3Cscript%3E*\" OR uri=\"*alert(*\" OR uri=\"*UNION*SELECT*\" OR uri=\"*OR*1=1*\" OR uri=\"*%27*\" OR uri=\"*--*\" OR uri=\"*cat*/etc/*\" | iplocation clientip | fillnull value=\"Unknown\" Country, City | stats count as hadise_sayi, latest(_time) as son_gorulme by clientip, Country, City, uri | eval OWASP_Category=\"A03:2021-Injection\", Alert_Level=\"CRITICAL\", Hadise=\"İnyeksiya Hücumu (SQLi/XSS)\" | eval son_gorulme = strftime(son_gorulme, \"%Y-%m-%d %H:%M:%S\") | table son_gorulme, clientip, Country, City, uri, hadise_sayi, OWASP_Category, Alert_Level, Hadise",
+  "cron_schedule": "*/15 * * * *",
+  "description": "SQL inyeksiyası, XSS və LFI cəhdlərini URI pattern-ləri vasitəsilə aşkarlayır.",
+  "is_visible": true,
+  "disabled": false
+}
