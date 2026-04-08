@@ -1,0 +1,8 @@
+{
+  "name": "OWASP_A09_Logging_and_Monitoring_Failures_Detection",
+  "search": "index=\"web_logs\" | search uri=\"*.log\" OR uri=\"*access_log*\" OR uri=\"*error_log*\" OR uri=\"*syslog*\" OR uri=\"*auth.log*\" OR uri=\"*%0d%0a*\" OR uri=\"*\\r\\n*\" OR uri=\"*web.config*\" | iplocation clientip | fillnull value=\"Unknown\" Country, City | eval OWASP_Category=\"A09:2021-Logging and Monitoring Failures\", Alert=\"CRITICAL: Log Fayllarına Müdaxilə Cəhdi\" | fieldformat _time = strftime(_time, \"%Y-%m-%d %H:%M:%S\") | sort - _time | table _time, clientip, Country, City, uri, Alert",
+  "cron_schedule": "*/15 * * * *",
+  "description": "Log fayllarına (access, error, auth) birbaşa müraciətləri və loq manipulyasiyası (CRLF injection) cəhdlərini aşkarlayır.",
+  "is_visible": true,
+  "disabled": false
+}
