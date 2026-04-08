@@ -1,0 +1,8 @@
+{
+  "name": "OWASP_A06_Vulnerable_Components_Scanning",
+  "search": "index=\"web_logs\" method IN (\"GET\", \"POST\", \"HEAD\") | search uri=\"*wp-content/plugins/*\" OR uri=\"*phpmyadmin*\" OR uri=\"*cgi-bin*\" OR uri=\"*fckeditor*\" OR uri=\"*jquery*1.*\" OR uri=\"*solr*\" OR uri=\"*log4j*\" OR uri=\"*struts*\" OR uri=\"*telerik*\" | iplocation clientip | fillnull value=\"Unknown\" Country, City | stats count as scan_count, values(uri) as attempted_urls, latest(_time) as last_seen by clientip, Country, City | fieldformat last_seen = strftime(last_seen, \"%Y-%m-%d %H:%M:%S\") | eval OWASP_Category=\"A06:2021-Vulnerable Components\", Alert=\"Zəiflik (Vulnerability) Skanı Aşkarlandı\" | sort - scan_count | table last_seen, clientip, Country, City, scan_count, attempted_urls, Alert",
+  "cron_schedule": "*/15 * * * *",
+  "description": "Köhnəlmiş komponentlərin (Log4j, phpMyAdmin, WordPress pluginləri və s.) skan edilməsini aşkarlayır.",
+  "is_visible": true,
+  "disabled": false
+}
