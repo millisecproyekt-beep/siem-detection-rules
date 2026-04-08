@@ -1,0 +1,6 @@
+{
+  "name": "QRadar_Brute_Force_Success",
+  "content": "SELECT sourceip, username, count(*) as login_count FROM events WHERE qid = 5000123 AND LogSourceType = 'Windows' GROUP BY sourceip HAVING login_count > 10",
+  "severity": 7,
+  "description": "Çoxsaylı uğursuz girişdən sonra gələn uğurlu girişi tutur."
+}
