@@ -1,0 +1,6 @@
+{
+  "name": "QRadar_Ransomware_Detection",
+  "content": "SELECT sourceip, count(DISTINCT filename) as file_count FROM events WHERE EventID = 4663 GROUP BY sourceip HAVING file_count > 50",
+  "severity": 9,
+  "description": "Qısa müddətdə çox sayda faylın modifikasiya edilməsini tutur."
+}
