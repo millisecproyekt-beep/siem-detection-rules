@@ -1,0 +1,6 @@
+{
+  "name": "Suspicious_Certutil_Download_Activity",
+  "search": "index=windows sourcetype=\"XmlWinEventLog:Microsoft-Windows-Sysmon\" EventCode=1 Image=\"*\\\\certutil.exe\" (CommandLine=\"*-urlcache*\" OR CommandLine=\"*-split*\") | stats count by Computer, User, CommandLine",
+  "severity": "high",
+  "description": "Certutil vasitəsilə kənardan fayl yüklənməsi cəhdlərini aşkarlayır."
+}
