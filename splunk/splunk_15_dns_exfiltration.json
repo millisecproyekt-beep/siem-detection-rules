@@ -1,0 +1,6 @@
+{
+  "name": "Potential_DNS_Exfiltration_Detection",
+  "search": "index=network sourcetype=dns | eval query_length=len(query) | where query_length > 100 | stats count by src_ip, query | sort - query_length",
+  "severity": "high",
+  "description": "Qeyri-adi dərəcədə uzun DNS sorğuları vasitəsilə data sızmasını aşkarlayır."
+}
