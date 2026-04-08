@@ -1,0 +1,6 @@
+{
+  "name": "Persistence_via_Scheduled_Task",
+  "search": "index=windows EventCode=4698 | xmlkv | table _time, Computer, TaskName, Command | sort - _time",
+  "severity": "medium",
+  "description": "Sistemdə yeni planlaşdırılmış tapşırıq yaradılmasını izləyir."
+}
