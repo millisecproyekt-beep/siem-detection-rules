@@ -1,0 +1,6 @@
+{
+  "name": "Credential_Dumping_LSASS_Access",
+  "search": "index=windows EventCode=10 TargetImage=\"C:\\\\Windows\\\\system32\\\\lsass.exe\" GrantedAccess=\"0x1fffff\" | stats count by Computer, SourceImage",
+  "severity": "critical",
+  "description": "LSASS prosesinə şübhəli müraciətləri (Credential Dumping) aşkarlayır."
+}
