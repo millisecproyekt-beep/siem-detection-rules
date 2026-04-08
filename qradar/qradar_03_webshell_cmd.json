@@ -1,0 +1,6 @@
+{
+  "name": "QRadar_WebShell_Execution",
+  "content": "SELECT * FROM events WHERE ParentProcessName ILIKE '%w3wp.exe%' AND (ProcessName = 'cmd.exe' OR ProcessName = 'powershell.exe')",
+  "severity": 9,
+  "description": "Web server prosesinin komanda sətiri başlatmasını aşkarlayır."
+}
