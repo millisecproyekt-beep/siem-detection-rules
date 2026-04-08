@@ -1,0 +1,6 @@
+{
+  "name": "Office_Product_Spawning_Shell",
+  "search": "index=windows EventCode=1 (ParentImage=\"*\\\\winword.exe\" OR ParentImage=\"*\\\\excel.exe\") AND (Image=\"*\\\\cmd.exe\" OR Image=\"*\\\\powershell.exe\") | table _time, Computer, User, ParentImage, Image",
+  "severity": "critical",
+  "description": "Office proqramlarının komanda sətiri başlatmasını (Phishing/Macro) aşkarlayır."
+}
