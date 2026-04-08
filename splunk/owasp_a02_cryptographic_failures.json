@@ -1,0 +1,8 @@
+{
+  "name": "OWASP_A02_Sensitive_URI_Access_Detection",
+  "search": "index=\"web_logs\" method IN (\"GET\", \"POST\") | search uri IN (\"*/login*\", \"*/auth*\", \"*/signin*\", \"*wp-login*\", \"*/admin/login*\") | iplocation clientip | fillnull value=\"Unknown\" Country, City | stats count as event_count, latest(_time) as last_seen by clientip, uri, Country, City | where event_count > 0 | fieldformat last_seen = strftime(last_seen, \"%Y-%m-%d %H:%M:%S\") | eval OWASP_Category=\"A02:2021-Cryptographic Failures\", Alert=\"Həssas Səhifəyə Müraciət (Port statusu yoxlanılmalıdır)\" | sort - last_seen | table last_seen, clientip, Country, City, uri, event_count, OWASP_Category, Alert",
+  "cron_schedule": "*/15 * * * *",
+  "description": "Sistemdəki həssas autentifikasiya səhifələrinə edilən müraciətləri monitorinq edir.",
+  "is_visible": true,
+  "disabled": false
+}
