@@ -1,0 +1,8 @@
+{
+  "name": "OWASP_A07_Brute_Force_Detection",
+  "search": "index=\"web_logs\" method=\"POST\" (\"*login*\" OR \"*signin*\" OR \"*wp-login*\" OR \"*auth*\") | stats count as login_attempts, values(uri) as login_pages, latest(_time) as last_seen by clientip | where login_attempts > 5 | iplocation clientip | fillnull value=\"Unknown\" Country, City | eval OWASP_Category=\"A07:2021-Identification Failures\", Alert=\"Brute Force / Credential Stuffing\" | eval last_seen = strftime(last_seen, \"%Y-%m-%d %H:%M:%S\") | sort - login_attempts | table last_seen, clientip, Country, City, login_attempts, login_pages, OWASP_Category, Alert",
+  "cron_schedule": "*/15 * * * *",
+  "description": "Eyni IP ünvanından qısa müddətdə çoxsaylı uğursuz giriş cəhdlərini (Brute Force) aşkarlayır.",
+  "is_visible": true,
+  "disabled": false
+}
