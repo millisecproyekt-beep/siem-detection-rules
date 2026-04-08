@@ -1,0 +1,6 @@
+{
+  "name": "QRadar_Exfiltration_Anomaly",
+  "content": "SELECT sourceip, sum(sourcebytes) as total_bytes FROM flows GROUP BY sourceip HAVING total_bytes > 500000000",
+  "severity": 6,
+  "description": "Bir hostdan xaricə böyük həcmli (500MB+) data çıxışını izləyir."
+}
