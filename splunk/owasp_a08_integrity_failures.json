@@ -1,0 +1,8 @@
+{
+  "name": "OWASP_A08_Malicious_File_Upload_Detection",
+  "search": "index=\"web_logs\" method IN (\"POST\", \"PUT\") | search uri=\"*/uploads/*.php*\" OR uri=\"*/images/*.php*\" OR uri=\"*.exe\" OR uri=\"*.sh\" OR uri=\"*.bat\" OR uri=\"*.py\" OR uri=\"*composer.json*\" OR uri=\"*package.json*\" OR uri=\"*.yaml\" OR uri=\"*.yml\" | iplocation clientip | fillnull value=\"Unknown\" Country, City | stats count as integrity_violations, values(uri) as suspicious_files, latest(_time) as last_seen by clientip, Country, City | fieldformat last_seen = strftime(last_seen, \"%Y-%m-%d %H:%M:%S\") | eval OWASP_Category=\"A08:2021-Software and Data Integrity Failures\", Alert=\"CRITICAL: İcazəsiz Fayl Yükləmə (Upload) Cəhdi\" | sort - integrity_violations | table last_seen, clientip, Country, City, integrity_violations, suspicious_files, Alert",
+  "cron_schedule": "*/15 * * * *",
+  "description": "Şəkil və ya yükləmə qovluqlarına skript (PHP, PY, SH) və ya konfiqurasiya fayllarının yüklənməsi cəhdlərini aşkarlayır.",
+  "is_visible": true,
+  "disabled": false
+}
