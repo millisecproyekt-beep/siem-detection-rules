@@ -1,0 +1,8 @@
+{
+  "name": "OWASP_A05_Security_Misconfiguration_Detection",
+  "search": "index=\"web_logs\" method IN (\"GET\", \"POST\", \"HEAD\") | search uri=\"*.env*\" OR uri=\"*.git*\" OR uri=\"*.htaccess*\" OR uri=\"*config.php*\" OR uri=\"*.bak*\" OR uri=\"*.sql*\" OR uri=\"*phpinfo*\" OR uri=\"*server-status*\" OR uri=\"*test.php*\" | iplocation clientip | fillnull value=\"Unknown\" Country, City | stats count as attack_count, values(uri) as sensitive_targets, latest(_time) as last_seen by clientip, Country, City | fieldformat last_seen = strftime(last_seen, \"%Y-%m-%d %H:%M:%S\") | eval OWASP_Category=\"A05:2021-Security Misconfiguration\", Alert=\"CRITICAL: Həssas Konfiqurasiya/Fayl Giriş Cəhdi\" | sort - last_seen | table last_seen, clientip, Country, City, attack_count, sensitive_targets, Alert",
+  "cron_schedule": "*/15 * * * *",
+  "description": "Serverdəki həssas konfiqurasiya fayllarına (.env, .git, .bak) və test səhifələrinə edilən müraciətləri aşkarlayır.",
+  "is_visible": true,
+  "disabled": false
+}
