@@ -1,0 +1,8 @@
+{
+  "name": "OWASP_A10_SSRF_Attack_Detection",
+  "search": "index=\"web_logs\" | search uri=\"*url=*\" OR uri=\"*dest=*\" OR uri=\"*path=*\" OR uri=\"*uri=*\" OR uri=\"*proxy=*\" | search uri=\"*127.0.0.1*\" OR uri=\"*localhost*\" OR uri=\"*169.254.169.254*\" OR uri=\"*metadata*\" OR uri=\"*file://*\" OR uri=\"*gopher://*\" OR uri=\"*dict://*\" | iplocation clientip | fillnull value=\"Unknown\" Country, City | eval OWASP_Category=\"A10:2021-SSRF\", Alert=\"SSRF Cəhdi Aşkarlandı\" | eval son_gorulme = strftime(_time, \"%Y-%m-%d %H:%M:%S\") | sort - son_gorulme | table son_gorulme, clientip, Country, City, uri, OWASP_Category, Alert",
+  "cron_schedule": "*/15 * * * *",
+  "description": "Serverin daxili resurslarına (localhost, metadata) və ya qeyri-adi protokollara (file, gopher) müraciət edərək edilən SSRF cəhdlərini aşkarlayır.",
+  "is_visible": true,
+  "disabled": false
+}
