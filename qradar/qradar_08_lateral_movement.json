@@ -1,0 +1,6 @@
+{
+  "name": "QRadar_Lateral_Movement_PsExec",
+  "content": "SELECT * FROM events WHERE ServiceName ILIKE '%PSEXESVC%' OR FileName ILIKE '%psexec.exe%'",
+  "severity": 7,
+  "description": "PsExec vasitəsilə şəbəkədə yana hərəkət cəhdlərini aşkarlayır."
+}
