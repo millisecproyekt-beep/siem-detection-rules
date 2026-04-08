@@ -1,0 +1,8 @@
+{
+  "name": "OWASP_A01_Broken_Access_Control_Detection",
+  "search": "index=\"web_logs\" status IN (401, 403) | iplocation clientip | fillnull value=\"Daxili/Naməlum\" Country, City | stats count as xeta_sayi, values(uri) as cehd_edilen_uriler, latest(_time) as son_gorulme by clientip, Country, City | where xeta_sayi > 3 | fieldformat son_gorulme = strftime(son_gorulme, \"%Y-%m-%d %H:%M:%S\") | eval OWASP_Category=\"A01:2021-Broken Access Control\", Alert=\"KRİTİK: İcazəsiz Giriş Cəhdi (Çoxlu xəta)\" | sort - xeta_sayi | table son_gorulme, clientip, Country, City, xeta_sayi, cehd_edilen_uriler, OWASP_Category, Alert",
+  "cron_schedule": "*/15 * * * *",
+  "description": "401 və 403 xətaları əsasında Broken Access Control cəhdlərini aşkarlayır.",
+  "is_visible": true,
+  "disabled": false
+}
