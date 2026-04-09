@@ -63,3 +63,4 @@ def sync_qradar():
 if __name__ == "__main__":
     sync_splunk()
     sync_qradar()
+
