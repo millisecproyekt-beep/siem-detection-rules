@@ -41,30 +41,21 @@ def sync_splunk():
             print(f"Xəta baş verdi: {e}")
 
 def sync_qradar():
-    print(f"\n--- QRadar Tam Diaqnostika Başladı ---")
-    path = "qradar/"
-    if not os.path.exists(path): return
+    print(f"\n--- QRadar Tam Status Yoxlaması ---")
+    headers = {"SEC": QRADAR_TOKEN, "Content-Type": "application/json", "Version": "27.0"}
     
-    # QRadar-da bu versiyada POST adətən bu ünvanlarda olur
-    endpoints = ["/api/analytics/rules", "/api/config/event_rules"]
-    # Versiyaları aşağıdan yuxarı yoxlayaq
-    versions = ["12.0", "15.0", "19.0", "27.0"]
-
-    for filename in [f for f in os.listdir(path) if f.endswith('.json')]:
-        with open(os.path.join(path, filename), 'r') as f:
-            rule_data = json.load(f)
+    # QRadar-da ən çox işlənən 3 fərqli endpoint
+    test_paths = ["/api/analytics/rules", "/api/config/event_rules", "/api/siem/local_rules"]
+    
+    for path in test_paths:
+        url = f"{QRADAR_URL.rstrip('/')}{path}"
+        try:
+            # Boş bir POST sorğusu atırıq ki, sadəcə cavab kodunu görək
+            res = requests.post(url, json={}, headers=headers, verify=False, timeout=5)
+            print(f"Yol: {path} | Cavab Kodu: {res.status_code}")
+        except Exception as e:
+            print(f"Yol: {path} | Bağlantı alınmadı")
             
-            for ep in endpoints:
-                for ver in versions:
-                    headers = {"SEC": QRADAR_TOKEN, "Content-Type": "application/json", "Version": ver}
-                    url = f"{QRADAR_URL.rstrip('/')}{ep}"
-                    try:
-                        res = requests.post(url, json=rule_data, headers=headers, verify=False, timeout=5)
-                        if res.status_code in [200, 201]:
-                            print(f"✅ TAPILDI! Yol: {ep}, Versiya: {ver}, Status: {res.status_code}")
-                            return # Birini tapdıqsa kifayətdir
-                    except: continue
-    print("❌ Təəssüf ki, heç bir kombinasiya işləmədi.")
 if __name__ == "__main__":
     sync_splunk()
     sync_qradar()
