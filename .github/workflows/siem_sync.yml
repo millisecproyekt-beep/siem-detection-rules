@@ -1,17 +1,13 @@
 name: SIEM Detection Sync
 
-# Nə vaxt işə düşsün?
 on:
   push:
     branches:
-      - main  # Sən main branch-ə nəsə push edəndə (commit edəndə)
-    paths:
-      - 'splunk/**'  # Yalnız splunk qovluğunda dəyişiklik olanda qaçsın
-      - 'scripts/**'
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest # GitHub-ın bizə verdiyi müvəqqəti server
+    runs-on: ubuntu-latest
 
     steps:
     - name: Kodu GitHub-dan götür
@@ -22,7 +18,7 @@ jobs:
       with:
         python-version: '3.9'
 
-    - name: Lazımi kitabxanaları yüklə (Requests)
+    - name: Lazımi kitabxanaları yüklə
       run: pip install requests urllib3
 
     - name: Sync skriptini işə sal
