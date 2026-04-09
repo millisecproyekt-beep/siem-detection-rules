@@ -79,7 +79,7 @@ def sync_qradar():
 
                 # QRadar Ariel searches POST sorğusu
             
-                res = requests.post(api_url, data=params, headers=headers, verify=False, timeout=25)
+                res = requests.post(api_url, params=params, headers=headers, verify=False, timeout=25)
                 
                 if res.status_code in [201, 200]:
                     print(f"✅ QRadar: {rule_data.get('name')} uğurla göndərildi! (Status: {res.status_code})")
