@@ -41,20 +41,35 @@ def sync_splunk():
             print(f"Xəta baş verdi: {e}")
 
 def sync_qradar():
-    print(f"\n--- QRadar Tam Status Yoxlaması ---")
-    headers = {"SEC": QRADAR_TOKEN, "Content-Type": "application/json", "Version": "27.0"}
+    print(f"\n--- QRadar Sinxronizasiyası Başladı ---")
+    path = "qradar/"
+    if not os.path.exists(path): return
     
-    # QRadar-da ən çox işlənən 3 fərqli endpoint
-    test_paths = ["/api/analytics/rules", "/api/config/event_rules", "/api/siem/local_rules"]
+    headers = {
+        "SEC": QRADAR_TOKEN, 
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Version": "27.0"
+    }
     
-    for path in test_paths:
-        url = f"{QRADAR_URL.rstrip('/')}{path}"
-        try:
-            # Boş bir POST sorğusu atırıq ki, sadəcə cavab kodunu görək
-            res = requests.post(url, json={}, headers=headers, verify=False, timeout=5)
-            print(f"Yol: {path} | Cavab Kodu: {res.status_code}")
-        except Exception as e:
-            print(f"Yol: {path} | Bağlantı alınmadı")
+    for filename in [f for f in os.listdir(path) if f.endswith('.json')]:
+        with open(os.path.join(path, filename), 'r', encoding='utf-8') as f:
+            rule_data = json.load(f)
+            # QRadar-da AQL axtarışlarını yadda saxlamaq üçün ən doğru yol:
+            api_url = f"{QRADAR_URL.rstrip('/')}/api/siem/offense_saved_searches"
+            
+            try:
+                res = requests.post(api_url, json=rule_data, headers=headers, verify=False, timeout=15)
+                
+                if res.status_code in [201, 200]:
+                    print(f"✅ QRadar: {rule_data['name']} uğurla yaradıldı! (Status: {res.status_code})")
+                elif res.status_code == 409:
+                    print(f"ℹ️ QRadar: {rule_data['name']} artıq mövcuddur. (Status: 409)")
+                else:
+                    print(f"❌ QRadar Xətası: {filename} -> Status: {res.status_code}")
+                    print(f"Cavab: {res.text}") # Xətanın səbəbini görmək üçün
+            except Exception as e:
+                print(f"⚠️ Bağlantı xətası ({filename}): {e}")
             
 if __name__ == "__main__":
     sync_splunk()
