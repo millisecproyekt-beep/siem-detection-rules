@@ -27,9 +27,8 @@ jobs:
 
     - name: Sync skriptini işə sal
       env:
-        # GitHub Secrets-də saxladığımız dəyişənləri bura bağlayırıq
         SPLUNK_URL: ${{ secrets.SPLUNK_URL }}
         SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
-        # QRadar hazır olanda bura əlavə edəcəyik
+        QRADAR_URL: ${{ secrets.QRADAR_URL }}
+        QRADAR_TOKEN: ${{ secrets.QRADAR_TOKEN }}
       run: python scripts/sync_to_siem.py
-# test trigger
