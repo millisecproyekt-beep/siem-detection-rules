@@ -41,17 +41,13 @@ def sync_splunk():
             print(f"Xəta baş verdi: {e}")
 
 def sync_qradar():
-    # Environment dəyişənlərini götürürük
     QRADAR_URL = os.getenv('QRADAR_URL', '').strip().rstrip('/')
     QRADAR_TOKEN = os.getenv('QRADAR_TOKEN', '').strip()
 
-    if not QRADAR_URL or not QRADAR_TOKEN:
-        print("⚠️ QRadar üçün URL və ya TOKEN tapılmadı, bu hissə ötürülür.")
-        return
+    if not QRADAR_URL or not QRADAR_TOKEN: return
 
-    print(f"\n--- QRadar Ariel Sinxronizasiyası Başladı ---")
+    print(f"\n--- QRadar Ariel Axtarış Sinxronizasiyası (Aktiv Qapı) ---")
     path = "qradar/"
-    if not os.path.exists(path): return
     
     headers = {
         "SEC": QRADAR_TOKEN, 
@@ -59,33 +55,32 @@ def sync_qradar():
         "Accept": "application/json",
         "Version": "27.0"
     }
-    
+
+    # Sənin tapdığın o yaşıl düymənin ünvanı:
+    api_url = f"{QRADAR_URL}/api/ariel/searches"
+
     for filename in [f for f in os.listdir(path) if f.endswith('.json')]:
         with open(os.path.join(path, filename), 'r', encoding='utf-8') as f:
             try:
                 rule_data = json.load(f)
                 
-                # --- VACİB DƏYİŞİKLİK: 'content' -> 'aql' çevirməsi ---
-                # Əgər JSON-da 'content' varsa, onu QRadar-ın sevdiyi 'aql' açarına keçiririk
-                if 'content' in rule_data:
-                    rule_data['aql'] = rule_data.pop('content')
+                # --- ÇOX VACİB: Sənəddəki formata uyğunlaşdırma ---
+                # Sənəddə gördüyün POST metodu 'query_expression' parametrinə ehtiyac duyur
+                payload = {
+                    "query_expression": rule_data.get('aql') or rule_data.get('content')
+                }
+
+                res = requests.post(api_url, params=payload, headers=headers, verify=False, timeout=20)
                 
-                # Ariel API-ın saved_searches nöqtəsi
-                api_url = f"{QRADAR_URL}/api/ariel/saved_searches"
-                
-                res = requests.post(api_url, json=rule_data, headers=headers, verify=False, timeout=15)
-                
+                # QRadar bu endpointdə uğurlu cavab olaraq 201 qaytarır
                 if res.status_code in [201, 200]:
-                    print(f"✅ QRadar: {rule_data.get('name')} uğurla yaradıldı! (Status: {res.status_code})")
-                elif res.status_code == 409:
-                    print(f"ℹ️ QRadar: {rule_data.get('name')} artıq mövcuddur. (Status: 409)")
+                    print(f"✅ QRadar: {filename} işə salındı! (Status: {res.status_code})")
                 else:
                     print(f"❌ Xəta: {filename} -> Status: {res.status_code}")
-                    # Xətanın tam detallarını görək ki, nədən şikayət edir
-                    print(f"QRadar Cavabı: {res.text}")
+                    print(f"Mesaj: {res.text}")
                     
             except Exception as e:
-                print(f"⚠️ {filename} faylı işlənərkən xəta: {e}")
+                print(f"⚠️ {filename} faylında texniki problem: {e}")
             
 if __name__ == "__main__":
     sync_splunk()
