@@ -41,25 +41,37 @@ def sync_splunk():
             print(f"Xəta baş verdi: {e}")
 
 def sync_qradar():
-    print("\n--- QRadar Yoxlanılır ---")
+    print(f"\n--- QRadar Yoxlanılır (v27.0): {QRADAR_URL} ---")
     path = "qradar/"
-    if not os.path.exists(path):
-        print(f"XƏTA: '{path}' qovluğu tapılmadı!")
-        return
+    if not os.path.exists(path): return
     
-    files = [f for f in os.listdir(path) if f.endswith('.json')]
-    print(f"Tapılan QRadar faylları: {len(files)}")
-
-    headers = {"SEC": QRADAR_TOKEN, "Content-Type": "application/json"}
-    for filename in files:
-        print(f"İşlənir: {filename}...")
-        try:
-            with open(os.path.join(path, filename), 'r') as f:
-                rule = json.load(f)
-                res = requests.post(f"{QRADAR_URL}/api/analytics/rules", json=rule, headers=headers, verify=False, timeout=10)
-                print(f"Nəticə: {res.status_code}")
-        except Exception as e:
-            print(f"Xəta baş verdi: {e}")
+    # Version 27.0 üçün xüsusi tənzimlənmiş headers
+    headers = {
+        "SEC": QRADAR_TOKEN, 
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Version": "27.0" # Sənin API Documentation-da gördüyün rəqəm
+    }
+    
+    for filename in [f for f in os.listdir(path) if f.endswith('.json')]:
+        with open(os.path.join(path, filename), 'r', encoding='utf-8') as f:
+            rule = json.load(f)
+            try:
+                # URL-in təmiz olduğundan əmin oluruq
+                clean_url = QRADAR_URL.rstrip('/')
+                api_url = f"{clean_url}/api/analytics/rules"
+                
+                res = requests.post(api_url, json=rule, headers=headers, verify=False, timeout=15)
+                
+                # Əgər hələ də 404 verərsə, alternativ yolu yoxla (bəzi QRadar AWS buildləri üçün)
+                if res.status_code == 404:
+                    api_url = f"{clean_url}/api/config/event_rules"
+                    res = requests.post(api_url, json=rule, headers=headers, verify=False, timeout=15)
+                
+                print(f"QRadar: {rule['name']} - Status: {res.status_code}")
+                
+            except Exception as e:
+                print(f"QRadar Xətası ({filename}): {e}")
 
 if __name__ == "__main__":
     sync_splunk()
