@@ -1,5 +1,5 @@
 {
   "name": "QRadar_Credential_Dumping",
-  "aql": "SELECT * FROM events WHERE qid = 1234567 AND TargetProcessName = 'lsass.exe'",
-  "description": "LSASS prosesinin yaddaşına şübhəli müraciəti tutur."
+  "aql": "SELECT * FROM events WHERE qid = 1234567 AND UTF8(payload) ILIKE '%lsass.exe%'",
+  "description": "LSASS prosesinə şübhəli müraciəti logun içindən tapır."
 }
