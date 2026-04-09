@@ -41,24 +41,30 @@ def sync_splunk():
             print(f"Xəta baş verdi: {e}")
 
 def sync_qradar():
-    print(f"\n--- QRadar API Testi Başladı ---")
-    headers = {"SEC": QRADAR_TOKEN, "Accept": "application/json", "Version": "27.0"}
-    url = f"{QRADAR_URL.rstrip('/')}/api/analytics/rules"
+    print(f"\n--- QRadar Tam Diaqnostika Başladı ---")
+    path = "qradar/"
+    if not os.path.exists(path): return
     
-    try:
-        # 1. Öncə mövcud qaydaları oxumağa çalışaq (GET)
-        res_get = requests.get(url, headers=headers, verify=False, timeout=10)
-        print(f"GET Sorğusu (Məlumat oxuma): Status {res_get.status_code}")
-        
-        if res_get.status_code == 200:
-            print("✅ Yol DOĞRUDUR. QRadar qaydaları siyahıya ala bilir.")
-            print("⚠️ Problem POST (yaratma) icazəsindədir.")
-        else:
-            print(f"❌ Yol SƏHVDİR və ya API bağlıdır. GET belə işləmir (404).")
+    # QRadar-da bu versiyada POST adətən bu ünvanlarda olur
+    endpoints = ["/api/analytics/rules", "/api/config/event_rules"]
+    # Versiyaları aşağıdan yuxarı yoxlayaq
+    versions = ["12.0", "15.0", "19.0", "27.0"]
 
-    except Exception as e:
-        print(f"Bağlantı xətası: {e}")
-
+    for filename in [f for f in os.listdir(path) if f.endswith('.json')]:
+        with open(os.path.join(path, filename), 'r') as f:
+            rule_data = json.load(f)
+            
+            for ep in endpoints:
+                for ver in versions:
+                    headers = {"SEC": QRADAR_TOKEN, "Content-Type": "application/json", "Version": ver}
+                    url = f"{QRADAR_URL.rstrip('/')}{ep}"
+                    try:
+                        res = requests.post(url, json=rule_data, headers=headers, verify=False, timeout=5)
+                        if res.status_code in [200, 201]:
+                            print(f"✅ TAPILDI! Yol: {ep}, Versiya: {ver}, Status: {res.status_code}")
+                            return # Birini tapdıqsa kifayətdir
+                    except: continue
+    print("❌ Təəssüf ki, heç bir kombinasiya işləmədi.")
 if __name__ == "__main__":
     sync_splunk()
     sync_qradar()
