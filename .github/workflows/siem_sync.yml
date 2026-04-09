@@ -32,3 +32,4 @@ jobs:
         SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
         # QRadar hazır olanda bura əlavə edəcəyik
       run: python scripts/sync_to_siem.py
+# test trigger
