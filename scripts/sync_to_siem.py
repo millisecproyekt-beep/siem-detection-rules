@@ -5,10 +5,11 @@ import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-SPLUNK_URL = os.getenv('SPLUNK_URL')
-SPLUNK_TOKEN = os.getenv('SPLUNK_TOKEN')
-QRADAR_URL = os.getenv('QRADAR_URL')
-QRADAR_TOKEN = os.getenv('QRADAR_TOKEN')
+
+SPLUNK_URL = os.getenv('SPLUNK_URL', '').strip()
+SPLUNK_TOKEN = os.getenv('SPLUNK_TOKEN', '').strip()
+QRADAR_URL = os.getenv('QRADAR_URL', '').strip()
+QRADAR_TOKEN = os.getenv('QRADAR_TOKEN', '').strip()
 
 def sync_splunk():
     print("--- Splunk Yoxlanılır ---")
