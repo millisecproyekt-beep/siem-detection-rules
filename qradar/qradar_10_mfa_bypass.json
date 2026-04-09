@@ -1,5 +1,5 @@
 {
   "name": "QRadar_MFA_Bypass_Attempt",
-  "aql": "SELECT * FROM events WHERE qid = 8000123 AND status = 'MFA Denied'",
-  "description": "MFA-nın ardıcıl imtina edilməsi və ya bypass cəhdlərini izləyir."
+  "aql": "SELECT * FROM events WHERE qid = 8000123 AND Status = 'MFA Denied'",
+  "description": "MFA-nın ardıcıl imtina edilməsini izləyir."
 }
