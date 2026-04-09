@@ -41,7 +41,7 @@ def sync_splunk():
             print(f"Xəta baş verdi: {e}")
 
 def sync_qradar():
-    print(f"\n--- QRadar Sinxronizasiyası Başladı ---")
+    print(f"\n--- QRadar Ariel Saved Search Sinxronizasiyası ---")
     path = "qradar/"
     if not os.path.exists(path): return
     
@@ -55,21 +55,22 @@ def sync_qradar():
     for filename in [f for f in os.listdir(path) if f.endswith('.json')]:
         with open(os.path.join(path, filename), 'r', encoding='utf-8') as f:
             rule_data = json.load(f)
-            # QRadar-da AQL axtarışlarını yadda saxlamaq üçün ən doğru yol:
-            api_url = f"{QRADAR_URL.rstrip('/')}/api/siem/offense_saved_searches"
+            
+            # Əsl "yaratma" qapısı budur:
+            api_url = f"{QRADAR_URL.rstrip('/')}/api/ariel/saved_searches"
             
             try:
                 res = requests.post(api_url, json=rule_data, headers=headers, verify=False, timeout=15)
                 
                 if res.status_code in [201, 200]:
-                    print(f"✅ QRadar: {rule_data['name']} uğurla yaradıldı! (Status: {res.status_code})")
+                    print(f"✅ QRadar: {rule_data.get('name')} yaradıldı! (Status: {res.status_code})")
                 elif res.status_code == 409:
-                    print(f"ℹ️ QRadar: {rule_data['name']} artıq mövcuddur. (Status: 409)")
+                    print(f"ℹ️ QRadar: {rule_data.get('name')} artıq var. (Status: 409)")
                 else:
-                    print(f"❌ QRadar Xətası: {filename} -> Status: {res.status_code}")
-                    print(f"Cavab: {res.text}") # Xətanın səbəbini görmək üçün
+                    print(f"❌ Xəta: {filename} -> Status: {res.status_code}")
+                    print(f"Mesaj: {res.text}")
             except Exception as e:
-                print(f"⚠️ Bağlantı xətası ({filename}): {e}")
+                print(f"⚠️ Bağlantı xətası: {e}")
             
 if __name__ == "__main__":
     sync_splunk()
