@@ -1,7 +1,7 @@
 {
   "name": "Detect NTDS.dit Database Extraction",
-  "description": "Hücumçu parolları oflayn şəkildə qırmaq üçün Active Directory-nin əsas verilənlər bazasını (ntds.dit) kopyalamağa çalışır.",
-  "aql": "(qid = 4663 AND UTF8(payload) ILIKE '%ntds.dit%')",
+  "description": "Hücumçu AD verilənlər bazasını (ntds.dit) kopyalamağa çalışır.",
+  "aql": "SELECT * FROM events WHERE (qid = 4663 AND UTF8(payload) ILIKE '%ntds.dit%')",
   "severity": 10,
   "category": "Credential Access",
   "mitre_technique": "T1003.002 - NTDS Extraction"
