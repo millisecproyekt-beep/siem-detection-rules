@@ -1,5 +1,0 @@
-{
-  "name": "QRadar_SQL_Injection_Detection",
-  "aql": "SELECT * FROM events WHERE (UTF8(payload) ILIKE '%UNION SELECT%' OR UTF8(payload) ILIKE '%OR 1=1%')",
-  "description": "Web trafikində SQL inyeksiyası aşkarlama qaydası"
-}
