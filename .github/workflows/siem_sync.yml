@@ -6,25 +6,51 @@ on:
       - main
 
 jobs:
-  build:
+  # 1-ci hissə: Splunk (Mövcud Python skriptinlə davam edir)
+  splunk-sync:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Kodu GitHub-dan götür
-      uses: actions/checkout@v3
+      - name: Kodu GitHub-dan götür
+        uses: actions/checkout@v3
 
-    - name: Python-u quraşdır
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      - name: Python-u quraşdır
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    - name: Lazımi kitabxanaları yüklə
-      run: pip install requests urllib3
+      - name: Lazımi kitabxanaları yüklə
+        run: pip install requests urllib3
 
-    - name: Sync skriptini işə sal
-      env:
-        SPLUNK_URL: ${{ secrets.SPLUNK_URL }}
-        SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
-        QRADAR_URL: ${{ secrets.QRADAR_URL }}
-        QRADAR_TOKEN: ${{ secrets.QRADAR_TOKEN }}
-      run: python scripts/sync_to_siem.py
+      - name: Splunk Sinxronizasiyasını işə sal
+        env:
+          SPLUNK_URL: ${{ secrets.SPLUNK_URL }}
+          SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
+        run: python scripts/sync_to_siem.py  # Skriptin içindəki Splunk hissəsi işləyəcək
+
+  # 2-ci hissə: QRadar (SSH və SCP vasitəsilə birbaşa Console-a bağlanır)
+  qradar-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu GitHub-dan götür
+        uses: actions/checkout@v3
+
+      - name: QRadar XML fayllarını Console-a kopyala (SCP)
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.QRADAR_HOST }}
+          username: root
+          key: ${{ secrets.QRADAR_SSH_KEY }} # Şifrə istifadə edirsənsə 'password: ${{ secrets.QRADAR_PASSWORD }}' yaz
+          source: "qradar/*.xml"
+          target: "/tmp/rules_sync/"
+
+      - name: QRadar daxilində Import və Deploy əmrlərini icra et (SSH)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.QRADAR_HOST }}
+          username: root
+          key: ${{ secrets.QRADAR_SSH_KEY }}
+          script: |
+            # Qaydanı import etmək
+            /opt/qradar/bin/contentManagement.pl --action import --file /tmp/rules_sync/qradar/rules.xml
+            # Dəyişiklikləri tətbiq etmək (Deploy)
+            /opt/qradar/bin/deploy_conf.sh
