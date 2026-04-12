@@ -44,53 +44,39 @@ def sync_qradar():
     QRADAR_URL = os.getenv('QRADAR_URL', '').strip().rstrip('/')
     QRADAR_TOKEN = os.getenv('QRADAR_TOKEN', '').strip()
 
-    if not QRADAR_URL or not QRADAR_TOKEN:
-        print("⚠️ QRadar məlumatları tapılmadı, bu hissə ötürülür.")
-        return
-
-    print(f"\n--- QRadar Yekun Sinxronizasiyası Başladı ---")
+    print(f"\n--- QRadar REAL Rule Deployment Başladı ---")
     path = "qradar/"
-    if not os.path.exists(path): return
-    
     headers = {
         "SEC": QRADAR_TOKEN, 
         "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Version": "27.0"
+        "Accept": "application/json"
     }
 
-    # Səninlə birlikdə tapdığımız ən stabil "yaşıl düymə" ünvanı
-    api_url = f"{QRADAR_URL}/api/ariel/searches"
+    # 1. Qaydanı Yaratmaq/Yeniləmək üçün API endpoint
+    rules_api = f"{QRADAR_URL}/api/analytics/rules"
 
     for filename in [f for f in os.listdir(path) if f.endswith('.json')]:
         with open(os.path.join(path, filename), 'r', encoding='utf-8') as f:
             try:
-                rule_data = json.load(f)
+                rule_payload = json.load(f) # JSON artıq tam QRadar Rule formatında olmalıdır
                 
-                # AQL sorğusunu 'query_expression' olaraq hazırlayırıq
-                # JSON-da həm 'aql', həm 'content' sahəsini yoxlayırıq ki, xəta olmasın
-                aql_query = rule_data.get('aql') or rule_data.get('content')
-                
-                if not aql_query:
-                    print(f"❌ {filename} daxilində AQL sorğusu tapılmadı!")
-                    continue
-
-                params = {"query_expression": aql_query}
-
-                # QRadar Ariel searches POST sorğusu
-            
-                res = requests.post(api_url, params=params, headers=headers, verify=False, timeout=25)
+                # QRadar-a POST sorğusu
+                res = requests.post(rules_api, json=rule_payload, headers=headers, verify=False, timeout=30)
                 
                 if res.status_code in [201, 200]:
-                    print(f"✅ QRadar: {rule_data.get('name')} uğurla göndərildi! (Status: {res.status_code})")
+                    print(f"✅ QRadar Qaydası Yaradıldı: {rule_payload.get('name')}")
                 elif res.status_code == 409:
-                    print(f"ℹ️ QRadar: {rule_data.get('name')} artıq sistemdə var. (Status: 409)")
+                    print(f"ℹ️ {rule_payload.get('name')} artıq var, yeniləmə tələb olunur (PUT).")
                 else:
-                    print(f"❌ Xəta: {filename} -> Status: {res.status_code}")
-                    print(f"Səbəb: {res.text}")
-                    
+                    print(f"❌ Xəta: {filename} -> {res.status_code}: {res.text}")
+
             except Exception as e:
                 print(f"⚠️ {filename} faylında problem: {e}")
+
+    # 2. KRİTİK: Qaydanın aktivləşməsi üçün Deploy Changes (Pramoy işləməsi üçün)
+    print("🔄 Dəyişikliklər tətbiq edilir (Deploying Changes)...")
+    deploy_url = f"{QRADAR_URL}/api/system/staging/deploy"
+    requests.post(deploy_url, headers=headers, verify=False)
             
 if __name__ == "__main__":
     sync_splunk()
