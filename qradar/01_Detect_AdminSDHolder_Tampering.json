@@ -1,20 +1,11 @@
 {
-  "name": "Detect: AdminSDHolder Tampering",
-  "base_capacity": 100,
-  "type": "ADE",
-  "description": "Detects changes to the AdminSDHolder object in AD which could indicate permission persistence.",
+  "name": "DaC: AdminSDHolder Tampering",
+  "enabled": true,
+  "type": "EVENT",
+  "severity": 8,
+  "description": "AD-də AdminSDHolder obyektinin dəyişdirilməsini izləyir.",
   "tests": [
-    {
-      "test_type": "TEXT_SEARCH",
-      "match_type": "CONTAINS",
-      "value": "AdminSDHolder",
-      "parameter_name": "Object Name"
-    },
-    {
-      "test_type": "LOG_SOURCE_EVENT_ID",
-      "match_type": "EQUALS",
-      "value": "5136"
-    }
-  ],
-  "severity": 8
+    { "test_type": "LOG_SOURCE_EVENT_ID", "match_type": "EQUALS", "value": "5136" },
+    { "test_type": "TEXT_SEARCH", "match_type": "CONTAINS", "value": "AdminSDHolder" }
+  ]
 }
