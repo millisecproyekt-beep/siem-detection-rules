@@ -1,26 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<content_export version="1.0">
+<content_export_package xmlns="http://www.q1labs.com/qradar/content_export">
     <custom_rule>
-        <name>DaC: Detect New Admin Creation</name>
-        <description>Active Directory mühitində 'Domain Admins' qrupuna yeni üzv əlavə edildikdə xəbərdarlıq yaradır.</description>
+        <name>Detect_New_Admin_Creation</name>
+        <description>Detects addition of users to Administrators group.</description>
         <enabled>true</enabled>
-        <severity>8</severity>
-        <type>EVENT</type>
-        
         <tests>
             <test>
-                <test_type>LOG_SOURCE_EVENT_ID</test_type>
-                <match_type>EQUALS</match_type>
-                <value>4728</value>
-            </test>
-            <test>
-                <test_type>TEXT_SEARCH</test_type>
-                <match_type>CONTAINS</match_type>
-                <value>Domain Admins</value>
+                <test_type>AQLFilterTest</test_type>
+                <test_condition>SELECT * FROM events WHERE ("EventID"='4720' OR "EventID"='4732') AND "Group Name" ILIKE '%Administrators%'</test_condition>
             </test>
         </tests>
-        
-        <low_level_category_id>14008</low_level_category_id>
     </custom_rule>
-</content_export>
-
+</content_export_package>
