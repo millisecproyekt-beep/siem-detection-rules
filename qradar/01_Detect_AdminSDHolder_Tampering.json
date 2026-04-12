@@ -1,0 +1,20 @@
+{
+  "name": "Detect: AdminSDHolder Tampering",
+  "base_capacity": 100,
+  "type": "ADE",
+  "description": "Detects changes to the AdminSDHolder object in AD which could indicate permission persistence.",
+  "tests": [
+    {
+      "test_type": "TEXT_SEARCH",
+      "match_type": "CONTAINS",
+      "value": "AdminSDHolder",
+      "parameter_name": "Object Name"
+    },
+    {
+      "test_type": "LOG_SOURCE_EVENT_ID",
+      "match_type": "EQUALS",
+      "value": "5136"
+    }
+  ],
+  "severity": 8
+}
