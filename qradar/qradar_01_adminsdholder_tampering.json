@@ -1,8 +1,0 @@
-{
-  "name": "Detect AdminSDHolder Persistence Attempt",
-  "description": "Hücumçu AD daxilində imtiyazlarını daimi etmək üçün AdminSDHolder obyektini manipulyasiya edir.",
-  "aql": "SELECT * FROM events WHERE (qid = 5136 AND UTF8(payload) ILIKE '%AdminSDHolder%')",
-  "severity": 9,
-  "category": "Persistence",
-  "mitre_technique": "T1098 - Account Manipulation"
-}
