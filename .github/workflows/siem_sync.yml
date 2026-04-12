@@ -2,15 +2,10 @@ name: SIEM Detection Sync
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - 'splunk/**'
-      - 'qradar/**'
-      - 'scripts/**'
+    # Bütün budaqlar və bütün qovluqlar üçün işləsin (test üçün)
+    branches: ["*"] 
 
 jobs:
-  # Həm Splunk, həm QRadar üçün vahid sinxronizasiya
   siem-sync:
     runs-on: ubuntu-latest
     steps:
@@ -27,11 +22,8 @@ jobs:
 
       - name: SIEM Sinxronizasiyasini ise sal
         env:
-          # Splunk Secret-ləri (Olduğu kimi saxlanıldı)
           SPLUNK_URL: ${{ secrets.SPLUNK_URL }}
           SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
-          
-          # QRadar Secret-ləri (API üçün keçid edildi)
           QRADAR_URL: ${{ secrets.QRADAR_URL }}
           QRADAR_TOKEN: ${{ secrets.QRADAR_TOKEN }}
         run: python scripts/sync_to_siem.py
