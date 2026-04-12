@@ -1,1 +1,0 @@
-{"name": "DaC: AdminSDHolder Tampering", "enabled": true, "type": "EVENT", "severity": 8, "tests": [{"test_type": "LOG_SOURCE_EVENT_ID", "match_type": "EQUALS", "value": "5136"}, {"test_type": "TEXT_SEARCH", "match_type": "CONTAINS", "value": "AdminSDHolder"}]}
