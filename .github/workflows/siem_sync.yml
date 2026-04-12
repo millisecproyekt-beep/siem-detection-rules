@@ -10,7 +10,7 @@ on:
       - 'scripts/**'
 
 jobs:
-  # Vahid Sinxronizasiya İş Akışı (Həm Splunk, həm QRadar üçün)
+  # Həm Splunk, həm QRadar üçün vahid sinxronizasiya
   siem-sync:
     runs-on: ubuntu-latest
     steps:
@@ -25,13 +25,13 @@ jobs:
       - name: Lazimi kitabxanalari yukle
         run: pip install requests urllib3
 
-      - name: SİEM Sinxronizasiyasini ise sal
+      - name: SIEM Sinxronizasiyasini ise sal
         env:
-          # Splunk üçün lazım olan secret-lər (Toxunulmadı)
+          # Splunk Secret-ləri (Olduğu kimi saxlanıldı)
           SPLUNK_URL: ${{ secrets.SPLUNK_URL }}
           SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
           
-          # QRadar üçün lazım olan secret-lər (API rejiminə keçirildi)
+          # QRadar Secret-ləri (API üçün keçid edildi)
           QRADAR_URL: ${{ secrets.QRADAR_URL }}
           QRADAR_TOKEN: ${{ secrets.QRADAR_TOKEN }}
         run: python scripts/sync_to_siem.py
