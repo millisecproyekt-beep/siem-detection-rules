@@ -6,53 +6,49 @@ on:
       - main
 
 jobs:
-  # Splunk hissəsi (Artıq işləyən hissən)
+  # 1. Splunk üçün Sinxronizasiya
   splunk-sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Kodu GitHub-dan götür
+      - name: Kodu GitHub-dan gotur
         uses: actions/checkout@v3
 
-      - name: Python-u quraşdır
+      - name: Python-u qurasdir
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - name: Lazımi kitabxanaları yüklə
+      - name: Lazimi kitabxanalari yukle
         run: pip install requests urllib3
 
-      - name: Splunk Sinxronizasiyasını işə sal
+      - name: Splunk Sinxronizasiyasini ise sal
         env:
           SPLUNK_URL: ${{ secrets.SPLUNK_URL }}
           SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
         run: python scripts/sync_to_siem.py
 
-  # QRadar hissəsi (SSH və SCP metodu)
+  # 2. QRadar üçün SSH vasitəsilə Sinxronizasiya
   qradar-ssh-sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Kodu GitHub-dan götür
+      - name: Kodu GitHub-dan gotur
         uses: actions/checkout@v3
 
-- name: XML Faylları QRadar-a göndər
+      - name: XML Fayllari QRadar-a gonder
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.QRADAR_HOST }}
           username: root
           key: ${{ secrets.QRADAR_SSH_KEY }}
-          # Buranı mütləq belə yaz ki, bütün XML-ləri tapıb göndərsin:
-          source: "qradar/*.xml" 
+          source: "qradar/*.xml"
           target: "/tmp/"
 
-      - name: QRadar daxilində Import əmrini ver
+      - name: QRadar daxilinde Import emrini ver
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.QRADAR_HOST }}
           username: root
           key: ${{ secrets.QRADAR_SSH_KEY }}
           script: |
-            # Qaydanı QRadar-ın daxili aləti ilə import edirik
-            /opt/qradar/bin/contentManagement.pl --action import --file /tmp/qradar/rules.xml
-            # Dəyişiklikləri tətbiq etmək
+            /opt/qradar/bin/contentManagement.pl --action import --file /tmp/qradar/qradar_06_admin_creation.xml
             /opt/qradar/bin/deploy_conf.sh
-            
