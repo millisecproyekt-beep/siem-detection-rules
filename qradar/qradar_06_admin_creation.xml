@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content_export version="1.0">
+    <custom_rule>
+        <name>DaC: Detect New Admin Creation</name>
+        <description>Active Directory mühitində 'Domain Admins' qrupuna yeni üzv əlavə edildikdə xəbərdarlıq yaradır.</description>
+        <enabled>true</enabled>
+        <severity>8</severity>
+        <type>EVENT</type>
+        
+        <tests>
+            <test>
+                <test_type>LOG_SOURCE_EVENT_ID</test_type>
+                <match_type>EQUALS</match_type>
+                <value>4728</value>
+            </test>
+            <test>
+                <test_type>TEXT_SEARCH</test_type>
+                <match_type>CONTAINS</match_type>
+                <value>Domain Admins</value>
+            </test>
+        </tests>
+        
+        <low_level_category_id>14008</low_level_category_id>
+    </custom_rule>
+</content_export>

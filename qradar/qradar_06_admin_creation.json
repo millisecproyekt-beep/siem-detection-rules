@@ -1,5 +1,0 @@
-{
-  "name": "QRadar_Admin_Account_Created",
-  "aql": "SELECT * FROM events WHERE qid = 5000892 AND (\"Group Name\" = 'Domain Admins' OR \"Group Name\" = 'Administrators')",
-  "description": "Kritik qruplara yeni istifadəçi əlavə edilməsini aşkarlayır."
-}
