@@ -54,3 +54,4 @@ jobs:
             /opt/qradar/bin/contentManagement.pl --action import --file /tmp/qradar/rules.xml
             # Dəyişiklikləri tətbiq etmək
             /opt/qradar/bin/deploy_conf.sh
+            
