@@ -34,13 +34,14 @@ jobs:
       - name: Kodu GitHub-dan götür
         uses: actions/checkout@v3
 
-      - name: XML Faylları QRadar-a göndər
+- name: XML Faylları QRadar-a göndər
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.QRADAR_HOST }}
           username: root
           key: ${{ secrets.QRADAR_SSH_KEY }}
-          source: "qradar/rules.xml"
+          # Buranı mütləq belə yaz ki, bütün XML-ləri tapıb göndərsin:
+          source: "qradar/*.xml" 
           target: "/tmp/"
 
       - name: QRadar daxilində Import əmrini ver
