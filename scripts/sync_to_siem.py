@@ -39,53 +39,7 @@ def sync_splunk():
                 print(f"Nəticə: {res.status_code}")
         except Exception as e:
             print(f"Xəta baş verdi: {e}")
-
-def sync_qradar():
-    print("\n--- 🛡️ QRadar REAL Rule Deployment Başladı ---")
-    
-    # URL-i təmizləyirik (sonundakı / və /api hissələrini yoxlayırıq)
-    base_url = os.getenv('QRADAR_URL', '').strip().rstrip('/')
-    if base_url.endswith('/api'):
-        base_url = base_url[:-4]
-    
-    token = os.getenv('QRADAR_TOKEN', '').strip()
-    
-    # KRİTİK: Endpoint və Headers
-    api_url = f"{base_url}/api/analytics/rules"
-    headers = {
-        "SEC": token,
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Version": "19.0"  # Versiyanı bura əlavə etdik ki, POST metodu aktivləşsin
-    }
-
-    path = "qradar/"
-    if not os.path.exists(path):
-        print(f"❌ '{path}' qovluğu tapılmadı!")
-        return
-
-    for filename in sorted(os.listdir(path)):
-        if filename.endswith('.json'):
-            print(f"🔄 Göndərilir: {filename}...")
-            with open(os.path.join(path, filename), 'r', encoding='utf-8') as f:
-                try:
-                    rule_data = json.load(f)
-                    res = requests.post(api_url, json=rule_data, headers=headers, verify=False, timeout=30)
-                    
-                    if res.status_code in [200, 201]:
-                        print(f"✅ UĞURLU: {rule_data.get('name')}")
-                    elif res.status_code == 409:
-                        print(f"ℹ️ MÖVCUDDUR: {rule_data.get('name')} artıq var.")
-                    else:
-                        print(f"❌ XƏTA ({filename}): {res.status_code}")
-                        print(f"Mesaj: {res.text}")
-                except Exception as e:
-                    print(f"⚠️ Problem: {e}")
-
-    # DEPLOY CHANGES
-    print("\n🔄 QRadar-da Dəyişikliklər tətbiq edilir...")
-    requests.post(f"{base_url}/api/system/staging/deploy", headers=headers, verify=False)
-            
+       
 if __name__ == "__main__":
     sync_splunk()
-    sync_qradar()
+
