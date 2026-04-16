@@ -1,11 +1,12 @@
-<content_export_package>
-    <custom_rule>
-        <name>DCSync Attack Detection (Mimikatz)</name>
-        <description>Detects DCSync replication requests (Event 4662) with specific GUIDs.</description>
-        <enabled>true</enabled>
-        <tests>
-            <test_type>AQLFilterTest</test_type>
-            <test_condition>SELECT * FROM events WHERE "EventID"='4662' AND "Access Mask"='0x100' AND ("Properties" ILIKE '%1131f6aa-9c07-11d1-f79f-00c04fc2dcd2%' OR "Properties" ILIKE '%1131f6ad-9c07-11d1-f79f-00c04fc2dcd2%')</test_condition>
-        </tests>
-    </custom_rule>
-</content_export_package>
+{
+  "name": "Detect_AdminSDHolder_Tampering",
+  "description": "Active Directory AdminSDHolder obyektinə edilən şübhəli müdaxilələri izləyir (GitHub tərəfindən idarə olunur).",
+  "enabled": true,
+  "content": {
+    "aql_query": "SELECT * FROM events WHERE UTF8(payload) ILIKE '%CN=AdminSDHolder,CN=System%' AND (qid = 5136 OR qid = 4662)"
+  },
+  "responses": {
+    "ensure_offense": true,
+    "severity": 10
+  }
+}
