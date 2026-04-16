@@ -1,1 +1,26 @@
+name: QRadar Detection Sync
+on:
+  push:
+    paths:
+      - 'qradar/**'  # Yalnız bu qovluq dəyişəndə tetiklənir
 
+jobs:
+  deploy-qradar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: pip install requests
+
+      - name: Run QRadar Deploy Script
+        env:
+          QRADAR_CONSOLE_IP: ${{ secrets.QRADAR_CONSOLE_IP }}
+          QRADAR_API_TOKEN: ${{ secrets.QRADAR_API_TOKEN }}
+        run: python scripts/sync_qradar.py
