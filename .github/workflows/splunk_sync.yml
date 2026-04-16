@@ -1,1 +1,26 @@
+name: Splunk Detection Sync
+on:
+  push:
+    paths:
+      - 'splunk/**'  # Yalnız bu qovluq dəyişəndə tetiklənir
 
+jobs:
+  deploy-splunk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: pip install requests
+
+      - name: Run Splunk Deploy Script
+        env:
+          SPLUNK_HOST: ${{ secrets.SPLUNK_HOST }}
+          SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
+        run: python scripts/sync_splunk.py
