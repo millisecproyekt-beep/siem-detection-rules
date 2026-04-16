@@ -1,0 +1,11 @@
+{
+  "name": "Detect_New_Admin_Creation",
+  "enabled": true,
+  "content": {
+    "aql_query": "SELECT * FROM events WHERE qid = 4720 OR qid = 4732"
+  },
+  "responses": {
+    "ensure_offense": true,
+    "severity": 7
+  }
+}
