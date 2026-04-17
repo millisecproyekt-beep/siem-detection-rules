@@ -1,8 +1,9 @@
 name: QRadar Detection Sync
+
 on:
   push:
     paths:
-      - 'qradar/**'  # Yalnız bu qovluq dəyişəndə tetiklənir
+      - 'qradar/**'
 
 jobs:
   deploy-qradar:
@@ -19,9 +20,8 @@ jobs:
       - name: Install Dependencies
         run: pip install requests
 
-  - name: Run QRadar Deploy Script
+      - name: Run Sync Script
         env:
-          # BURADA DİQQƏTLİ OL: Sağ tərəfdəki adlar Secret-dəki adlarla eyni olmalıdır!
           QRADAR_URL: ${{ secrets.QRADAR_URL }}
           QRADAR_TOKEN: ${{ secrets.QRADAR_TOKEN }}
         run: python scripts/sync_qradar.py
