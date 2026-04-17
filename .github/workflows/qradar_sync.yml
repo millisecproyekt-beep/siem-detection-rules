@@ -19,8 +19,9 @@ jobs:
       - name: Install Dependencies
         run: pip install requests
 
-   - name: Run QRadar Deploy Script
+  - name: Run QRadar Deploy Script
         env:
-          QRADAR_URL: ${{ secrets.QRADAR_URL }}   # Düzgün Secret adı budur
-          QRADAR_TOKEN: ${{ secrets.QRADAR_TOKEN }} # Düzgün Secret adı budur
+          # BURADA DİQQƏTLİ OL: Sağ tərəfdəki adlar Secret-dəki adlarla eyni olmalıdır!
+          QRADAR_URL: ${{ secrets.QRADAR_URL }}
+          QRADAR_TOKEN: ${{ secrets.QRADAR_TOKEN }}
         run: python scripts/sync_qradar.py
