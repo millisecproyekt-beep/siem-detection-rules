@@ -64,3 +64,5 @@ def sync():
                         print(f"  [XƏTA] Status: {status}")
                 else:
                     # QRadar API sıfırdan yaratmağa icazə vermədiyi üçün Placeholder məntiqi işləyir
+
+                    
