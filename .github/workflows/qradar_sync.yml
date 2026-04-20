@@ -5,6 +5,7 @@ on:
     paths:
       - 'qradar/**'
       - 'scripts/**'
+  workflow_dispatch: # Bu sətir sənə Actions tabında "Run workflow" düyməsini verəcək ki, əllə işə sala biləsən.
 
 jobs:
   deploy:
@@ -18,11 +19,13 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Kitabxanaları və Brauzeri yüklə
+      - name: Kitabxanaları yüklə
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
-          # Playwright-in işləməsi üçün lazım olan sistem faylları və Chrome
-          npx playwright install --with-deps chromium
+
+      - name: Playwright Brauzerini Yüklə (Ən Vacib Addım)
+        run: playwright install --with-deps chromium
 
       - name: Robotu işə sal
         env:
