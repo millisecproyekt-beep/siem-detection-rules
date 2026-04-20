@@ -4,6 +4,7 @@ import time
 import re
 from playwright.sync_api import sync_playwright
 
+# GitHub Secrets-dən dəyərləri çəkirik
 QRADAR_URL = os.getenv('QRADAR_URL', '').strip()
 QRADAR_USER = os.getenv('QRADAR_USER', '').strip()
 QRADAR_PASS = os.getenv('QRADAR_PASS', '').strip()
@@ -21,7 +22,7 @@ def create_rule_with_robot(rule_name):
 
         try:
             print("1. QRadar-a daxil olunur...")
-            # DƏYİŞİKLİK BURADADIR: networkidle əvəzinə domcontentloaded və 60 saniyə (60000ms) limit
+            # Networkidle əvəzinə domcontentloaded və 60 saniyə limit (Şəbəkə problemlərinə qarşı)
             page.goto(f"{QRADAR_URL}/console/login.jsp", wait_until="domcontentloaded", timeout=60000)
 
             page.fill("input[name='j_username']", QRADAR_USER)
@@ -33,10 +34,12 @@ def create_rule_with_robot(rule_name):
             print("  -> Uğurla daxil olduq!")
 
             print("  [>] Alert və Pop-up pəncərələri məcburi bağlanır...")
+            # Lisenziya pəncərələrini bağlamaq üçün 4 dəfə Escape vururuq
             for _ in range(4):
                 page.keyboard.press("Escape")
                 page.wait_for_timeout(1000)
             
+            # Hər ehtimala qarşı ekranda qalan OK/Close düyməsini axtarıb zorla vururuq
             try:
                 page.locator("button:has-text('OK'), button:has-text('Close'), button:has-text('I Agree')").first.click(force=True, timeout=2000)
             except:
@@ -44,6 +47,7 @@ def create_rule_with_robot(rule_name):
 
             print("2. Offenses menyusuna keçid edilir...")
             
+            # ZİREHLİ AXTARIŞ (REGEX): Sözün ətrafındakı boşluqları və böyük/kiçik hərfləri vecinə almır
             offenses_regex = page.get_by_text(re.compile(r"^\s*Offenses\s*$", re.IGNORECASE)).first
             offenses_link = page.get_by_role("link", name=re.compile(r"Offenses", re.IGNORECASE)).first
             
@@ -52,6 +56,7 @@ def create_rule_with_robot(rule_name):
             elif offenses_link.is_visible(timeout=5000):
                 offenses_link.click(force=True)
             else:
+                # Ən son çıxış yolu: XPath
                 page.locator("xpath=//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'offenses') and not(contains(text(), 'My'))]").first.click(force=True)
             
             print("  [WAIT] 'Offenses' sonrası 15 saniyə gözlənilir...")
