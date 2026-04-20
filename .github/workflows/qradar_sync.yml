@@ -1,27 +1,32 @@
-name: QRadar-Sync
+name: QRadar UI Robot Sync
 
 on:
   push:
     paths:
       - 'qradar/**'
+      - 'scripts/**'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Repo-nu kopyala
         uses: actions/checkout@v3
 
-      - name: Set-up-Python
+      - name: Python-u quraşdır
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - name: Install-Requests
-        run: pip install requests
+      - name: Kitabxanaları və Brauzeri yüklə
+        run: |
+          pip install -r requirements.txt
+          # Playwright-in işləməsi üçün lazım olan sistem faylları və Chrome
+          npx playwright install --with-deps chromium
 
-      - name: Run-Script
+      - name: Robotu işə sal
         env:
           QRADAR_URL: ${{ secrets.QRADAR_URL }}
-          QRADAR_TOKEN: ${{ secrets.QRADAR_TOKEN }}
-        run: python scripts/sync_qradar.py
+          QRADAR_USER: ${{ secrets.QRADAR_USER }}
+          QRADAR_PASS: ${{ secrets.QRADAR_PASS }}
+        run: python scripts/sync_qradar_ui.py
