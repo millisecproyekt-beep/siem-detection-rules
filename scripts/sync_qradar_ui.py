@@ -26,70 +26,70 @@ def create_rule_with_robot(rule_name):
             page.fill("input[name='j_password']", QRADAR_PASS)
             page.press("input[name='j_password']", "Enter")
             
-            # QRadar-a nəfəs almaq üçün 5 saniyə vaxt veririk
             page.wait_for_timeout(5000) 
             print("  -> Uğurla daxil olduq!")
 
-            # ZİREH 1: Əgər ekrana "Welcome/License" pop-up çıxıbsa, Escape vurub bağlayırıq
-            page.keyboard.press("Escape")
-            page.wait_for_timeout(1000)
-            page.keyboard.press("Escape")
+            # Lisenziya və ya Alert Pop-up-larını bağlamaq
+            print("  [>] Alert pəncərələri yoxlanılır...")
+            ok_button = page.locator("button:has-text('OK'), button:has-text('Close')").first
+            if ok_button.is_visible(timeout=5000):
+                ok_button.click(force=True)
+                print("    - 'OK' klikləndi.")
+                page.wait_for_timeout(2000)
 
-            print("2. Rules (Qaydalar) menyusuna keçid edilir...")
-            
-            # ZİREH 2: Tag-dan asılı olmayaraq (a, div, span) ekrandakı ilk 'Offenses' sözünü tapıb vururuq
-            offenses_tab = page.locator("text='Offenses'").first
+            print("2. Offenses menyusuna keçid edilir...")
+            # 'Offenses' tabına klikləyirik
+            offenses_tab = page.locator("#Core_Offenses, text='Offenses'").first
             offenses_tab.wait_for(state="visible", timeout=15000)
-            offenses_tab.click(force=True) # force=True başqa element mane olsa belə məcburi klikləyir
+            offenses_tab.click(force=True)
             
-            page.wait_for_timeout(3000)
+            # Tələbinə uyğun olaraq: 20 saniyə gözlə
+            print("  [WAIT] 'Offenses' sonrası 20 saniyə gözlənilir...")
+            page.wait_for_timeout(20000)
 
-            # Eyni məntiq ilə 'Rules' menyusunu tapıb vururuq
-            rules_link = page.locator("text='Rules'").first
+            print("3. Rules menyusuna keçid edilir...")
+            # 'Rules' linkinə klikləyirik
+            rules_link = page.locator("#Core_Rules, text='Rules'").first
             rules_link.wait_for(state="visible", timeout=15000)
             rules_link.click(force=True)
             
-            page.wait_for_timeout(4000)
+            # Tələbinə uyğun olaraq: Yenə 20 saniyə gözlə
+            print("  [WAIT] 'Rules' sonrası 20 saniyə gözlənilir...")
+            page.wait_for_timeout(20000)
 
-            print(f"3. '{rule_name}' qaydası yaradılır...")
+            print(f"4. '{rule_name}' qaydası yaradılır...")
             
+            # QRadar-ın daxili iframe-ni tapırıq (Rules səhifəsi adətən iframe içindədir)
             frame = page.frame(name="core_iframe") or page.frame_locator("iframe[name='core_iframe']")
             if not frame:
-                print("  [!] Diqqət: 'core_iframe' tapılmadı, birbaşa səhifədə axtarılır...")
                 frame = page 
 
+            # Actions menyusuna kliklə
             actions_menu = frame.locator("text='Actions'").first
             actions_menu.click(force=True)
-            page.wait_for_timeout(1500)
+            page.wait_for_timeout(2000)
 
+            # Yeni Rule yaradılmasını başlat
             new_rule_btn = frame.locator("text='New Event Rule'").first
             new_rule_btn.click(force=True)
             page.wait_for_timeout(5000) 
 
+            # Wizard (sehirbaz) pəncərəsi ilə işləmək
             wizard_frame = page.frame(name="wizard_iframe") or page.frame_locator("iframe[src*='RuleWizard']")
             
-            # Rule Wizard səhifəsində Next düyməsi
-            if wizard_frame:
-                wizard_frame.locator("button:has-text('Next >')").first.click(force=True)
-            else:
-                page.locator("button:has-text('Next >')").first.click(force=True)
+            target = wizard_frame if wizard_frame else page
             
+            target.locator("button:has-text('Next >')").first.click(force=True)
             page.wait_for_timeout(2000)
 
-            # Rule Name yazmaq və Finish vurmaq
-            if wizard_frame:
-                wizard_frame.fill("input[name='ruleName'], input.ruleNameInput", rule_name)
-                wizard_frame.locator("button:has-text('Finish')").first.click(force=True)
-            else:
-                page.fill("input[name='ruleName'], input.ruleNameInput", rule_name)
-                page.locator("button:has-text('Finish')").first.click(force=True)
+            target.fill("input[name='ruleName'], input.ruleNameInput", rule_name)
+            target.locator("button:has-text('Finish')").first.click(force=True)
 
             page.wait_for_timeout(3000)
             print(f"  [OK] '{rule_name}' müvəffəqiyyətlə yaradıldı!")
 
         except Exception as e:
-            print(f"  [XƏTA] Robot '{rule_name}' qaydasını yaradarkən ilişdi: {str(e)}")
-            page.screenshot(path=f"error_screenshot_{rule_name}.png") 
+            print(f"  [XƏTA] Robot proses zamanı ilişdi: {str(e)}")
 
         finally:
             browser.close()
@@ -97,7 +97,7 @@ def create_rule_with_robot(rule_name):
 
 def main():
     if not QRADAR_URL or not QRADAR_USER or not QRADAR_PASS:
-        print("CRITICAL XƏTA: URL, USER və ya PASS secret-ləri tapılmadı!")
+        print("XƏTA: Giriş məlumatları (Secrets) tapılmadı!")
         return
 
     path = "qradar/"
@@ -109,10 +109,8 @@ def main():
                     rule_name = local_rule.get('name', '').strip()
                     if rule_name:
                         create_rule_with_robot(rule_name)
-                    else:
-                        print(f"  [!] Xəbərdarlıq: '{filename}' faylında 'name' parametri boşdur.")
-                except json.JSONDecodeError:
-                    print(f"  [!] Xəbərdarlıq: '{filename}' düzgün JSON formatında deyil.")
+                except Exception as e:
+                    print(f"  [!] Fayl oxunarkən xəta: {filename}")
 
 if __name__ == "__main__":
     main()
