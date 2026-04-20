@@ -24,51 +24,65 @@ def create_rule_with_robot(rule_name):
 
             page.fill("input[name='j_username']", QRADAR_USER)
             page.fill("input[name='j_password']", QRADAR_PASS)
-            
-            # Düymə axtarmaq əvəzinə birbaşa Enter vururuq!
             page.press("input[name='j_password']", "Enter")
             
-            page.wait_for_load_state("networkidle")
-            page.wait_for_timeout(3000) 
+            # QRadar-a nəfəs almaq üçün 5 saniyə vaxt veririk
+            page.wait_for_timeout(5000) 
             print("  -> Uğurla daxil olduq!")
+
+            # ZİREH 1: Əgər ekrana "Welcome/License" pop-up çıxıbsa, Escape vurub bağlayırıq
+            page.keyboard.press("Escape")
+            page.wait_for_timeout(1000)
+            page.keyboard.press("Escape")
 
             print("2. Rules (Qaydalar) menyusuna keçid edilir...")
             
-            page.click("a:has-text('Offenses')")
-            page.wait_for_timeout(2000)
-
-            page.click("a:has-text('Rules')")
-            page.wait_for_load_state("networkidle")
+            # ZİREH 2: Tag-dan asılı olmayaraq (a, div, span) ekrandakı ilk 'Offenses' sözünü tapıb vururuq
+            offenses_tab = page.locator("text='Offenses'").first
+            offenses_tab.wait_for(state="visible", timeout=15000)
+            offenses_tab.click(force=True) # force=True başqa element mane olsa belə məcburi klikləyir
+            
             page.wait_for_timeout(3000)
+
+            # Eyni məntiq ilə 'Rules' menyusunu tapıb vururuq
+            rules_link = page.locator("text='Rules'").first
+            rules_link.wait_for(state="visible", timeout=15000)
+            rules_link.click(force=True)
+            
+            page.wait_for_timeout(4000)
 
             print(f"3. '{rule_name}' qaydası yaradılır...")
             
             frame = page.frame(name="core_iframe") or page.frame_locator("iframe[name='core_iframe']")
-            
             if not frame:
                 print("  [!] Diqqət: 'core_iframe' tapılmadı, birbaşa səhifədə axtarılır...")
                 frame = page 
 
-            frame.click("span:has-text('Actions')")
-            page.wait_for_timeout(1000)
+            actions_menu = frame.locator("text='Actions'").first
+            actions_menu.click(force=True)
+            page.wait_for_timeout(1500)
 
-            frame.click("td:has-text('New Event Rule')")
-            page.wait_for_timeout(4000) 
+            new_rule_btn = frame.locator("text='New Event Rule'").first
+            new_rule_btn.click(force=True)
+            page.wait_for_timeout(5000) 
 
             wizard_frame = page.frame(name="wizard_iframe") or page.frame_locator("iframe[src*='RuleWizard']")
+            
+            # Rule Wizard səhifəsində Next düyməsi
             if wizard_frame:
-                wizard_frame.click("button:has-text('Next >')")
+                wizard_frame.locator("button:has-text('Next >')").first.click(force=True)
             else:
-                page.click("button:has-text('Next >')")
+                page.locator("button:has-text('Next >')").first.click(force=True)
             
             page.wait_for_timeout(2000)
 
+            # Rule Name yazmaq və Finish vurmaq
             if wizard_frame:
                 wizard_frame.fill("input[name='ruleName'], input.ruleNameInput", rule_name)
-                wizard_frame.click("button:has-text('Finish')")
+                wizard_frame.locator("button:has-text('Finish')").first.click(force=True)
             else:
                 page.fill("input[name='ruleName'], input.ruleNameInput", rule_name)
-                page.click("button:has-text('Finish')")
+                page.locator("button:has-text('Finish')").first.click(force=True)
 
             page.wait_for_timeout(3000)
             print(f"  [OK] '{rule_name}' müvəffəqiyyətlə yaradıldı!")
