@@ -57,4 +57,10 @@ def sync():
                 if match:
                     r_id = match['id']
                     print(f"Yenilənir: '{rule_name}' (ID: {r_id})")
-
+                    status = update_rule(r_id, local_rule)
+                    if status in [200, 201, 202]:
+                        print("  [OK] Qayda uğurla API vasitəsilə yeniləndi!")
+                    else:
+                        print(f"  [XƏTA] Status: {status}")
+                else:
+                    # QRadar API sıfırdan yaratmağa icazə vermədiyi üçün Placeholder məntiqi işləyir
