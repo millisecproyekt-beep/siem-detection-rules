@@ -28,4 +28,4 @@ jobs:
         env:
           QRADAR_URL: ${{ secrets.QRADAR_URL }}
           QRADAR_TOKEN: ${{ secrets.QRADAR_TOKEN }}
-        run: python scripts/sync_qradar.py
+        run: python scripts/sync_qradar_ui.py
