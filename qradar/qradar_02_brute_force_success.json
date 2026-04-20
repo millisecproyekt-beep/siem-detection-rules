@@ -3,4 +3,3 @@
   "aql": "SELECT sourceip, username, count(*) as login_count FROM events WHERE qid = 5000123 GROUP BY sourceip HAVING login_count > 10",
   "description": "Çoxsaylı uğursuz girişdən sonra gələn uğurlu girişi tutur."
 }
- 
