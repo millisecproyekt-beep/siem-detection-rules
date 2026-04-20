@@ -57,3 +57,4 @@ def sync():
                 if match:
                     r_id = match['id']
                     print(f"Yenilənir: '{rule_name}' (ID: {r_id})")
+
