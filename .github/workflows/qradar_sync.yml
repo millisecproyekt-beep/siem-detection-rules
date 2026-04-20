@@ -1,11 +1,11 @@
-name: QRadar API Sync
+name: QRadar UI Robot Sync
 
 on:
   push:
     paths:
       - 'qradar/**'
       - 'scripts/**'
-  workflow_dispatch: # Əllə işə salmaq üçün düymə
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -24,8 +24,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: QRadar API vasitəsilə Yeniləmə (Update)
+      - name: Playwright Brauzerini Yüklə (Mütləqdir!)
+        run: playwright install --with-deps chromium
+
+      - name: Robotu işə sal (UI)
         env:
           QRADAR_URL: ${{ secrets.QRADAR_URL }}
-          QRADAR_TOKEN: ${{ secrets.QRADAR_TOKEN }}
+          QRADAR_USER: ${{ secrets.QRADAR_USER }}
+          QRADAR_PASS: ${{ secrets.QRADAR_PASS }}
         run: python scripts/sync_qradar_ui.py
