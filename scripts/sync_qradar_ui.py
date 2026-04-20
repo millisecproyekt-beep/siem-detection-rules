@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import re
 from playwright.sync_api import sync_playwright
 
 QRADAR_URL = os.getenv('QRADAR_URL', '').strip()
@@ -26,32 +27,49 @@ def create_rule_with_robot(rule_name):
             page.fill("input[name='j_password']", QRADAR_PASS)
             page.press("input[name='j_password']", "Enter")
             
-            page.wait_for_timeout(5000) 
+            print("  [WAIT] Dashboard-un tam yüklənməsi və Pop-up-ların çıxması üçün 15 saniyə gözlənilir...")
+            page.wait_for_timeout(15000) 
             print("  -> Uğurla daxil olduq!")
 
-            print("  [>] Alert pəncərələri yoxlanılır...")
+            print("  [>] Alert və Pop-up pəncərələri məcburi bağlanır...")
+            # Lisenziya pəncərələrini bağlamaq üçün 4 dəfə Escape vururuq
+            for _ in range(4):
+                page.keyboard.press("Escape")
+                page.wait_for_timeout(1000)
+            
+            # Hər ehtimala qarşı ekranda qalan OK/Close düyməsini axtarıb zorla vururuq
             try:
-                ok_button = page.locator("button:has-text('OK'), button:has-text('Close')").first
-                if ok_button.is_visible(timeout=5000):
-                    ok_button.click(force=True)
-                    print("    - 'OK/Close' klikləndi.")
-                    page.wait_for_timeout(2000)
+                page.locator("button:has-text('OK'), button:has-text('Close'), button:has-text('I Agree')").first.click(force=True, timeout=2000)
             except:
-                pass # Pop-up yoxdursa, sakitcə keç
+                pass
 
             print("2. Offenses menyusuna keçid edilir...")
-            # YALNIZ və YALNIZ tam "Offenses" sözü yazılan elementi tapır
-            offenses_tab = page.get_by_text("Offenses", exact=True).first
-            offenses_tab.wait_for(state="visible", timeout=15000)
-            offenses_tab.click(force=True)
+            
+            # ZİREHLİ AXTARIŞ (REGEX): Sözün ətrafındakı boşluqları və böyük/kiçik hərfləri vecinə almır
+            offenses_regex = page.get_by_text(re.compile(r"^\s*Offenses\s*$", re.IGNORECASE)).first
+            offenses_link = page.get_by_role("link", name=re.compile(r"Offenses", re.IGNORECASE)).first
+            
+            if offenses_regex.is_visible(timeout=5000):
+                offenses_regex.click(force=True)
+            elif offenses_link.is_visible(timeout=5000):
+                offenses_link.click(force=True)
+            else:
+                # Ən son çıxış yolu: XPath
+                page.locator("xpath=//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'offenses') and not(contains(text(), 'My'))]").first.click(force=True)
             
             print("  [WAIT] 'Offenses' sonrası 15 saniyə gözlənilir...")
             page.wait_for_timeout(15000)
 
             print("3. Rules menyusuna keçid edilir...")
-            rules_link = page.get_by_text("Rules", exact=True).first
-            rules_link.wait_for(state="visible", timeout=15000)
-            rules_link.click(force=True)
+            rules_regex = page.get_by_text(re.compile(r"^\s*Rules\s*$", re.IGNORECASE)).first
+            rules_link = page.get_by_role("link", name=re.compile(r"Rules", re.IGNORECASE)).first
+            
+            if rules_regex.is_visible(timeout=5000):
+                rules_regex.click(force=True)
+            elif rules_link.is_visible(timeout=5000):
+                rules_link.click(force=True)
+            else:
+                page.locator("text='Rules'").first.click(force=True)
             
             print("  [WAIT] 'Rules' sonrası 15 saniyə gözlənilir...")
             page.wait_for_timeout(15000)
@@ -62,11 +80,15 @@ def create_rule_with_robot(rule_name):
             if not frame:
                 frame = page 
 
-            actions_menu = frame.get_by_text("Actions", exact=True).first
+            actions_menu = frame.get_by_text(re.compile(r"Actions", re.IGNORECASE)).first
+            if not actions_menu.is_visible(timeout=3000):
+               actions_menu = frame.locator("text='Actions'").first
             actions_menu.click(force=True)
             page.wait_for_timeout(2000)
 
-            new_rule_btn = frame.get_by_text("New Event Rule", exact=True).first
+            new_rule_btn = frame.get_by_text(re.compile(r"New Event Rule", re.IGNORECASE)).first
+            if not new_rule_btn.is_visible(timeout=3000):
+               new_rule_btn = frame.locator("text='New Event Rule'").first
             new_rule_btn.click(force=True)
             page.wait_for_timeout(5000) 
 
