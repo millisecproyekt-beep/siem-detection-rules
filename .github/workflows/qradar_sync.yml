@@ -32,4 +32,4 @@ jobs:
           QRADAR_URL: ${{ secrets.QRADAR_URL }}
           QRADAR_USER: ${{ secrets.QRADAR_USER }}
           QRADAR_PASS: ${{ secrets.QRADAR_PASS }}
-        run: python scripts/sync_qradar_ui.py
+        run: python scripts/sync_qradar.py
