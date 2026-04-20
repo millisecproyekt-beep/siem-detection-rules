@@ -64,5 +64,7 @@ def sync():
                         print(f"  [XƏTA] Status: {status}")
                 else:
                     # QRadar API sıfırdan yaratmağa icazə vermədiyi üçün Placeholder məntiqi işləyir
+                    print(f"  [!] '{rule_name}' QRadar-da tapılmadı. Zəhmət olmasa QRadar UI-da bu adla boş qayda (Placeholder) yaradın.")
 
-                    
+if __name__ == "__main__":
+    sync()
