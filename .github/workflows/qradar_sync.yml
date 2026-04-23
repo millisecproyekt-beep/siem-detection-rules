@@ -1,32 +1,32 @@
 name: QRadar Detection Sync
-name: QRadar-Sync
 
-on:
+"on":
   push:
+    branches:
+      - main
     paths:
       - 'qradar/**'
+  workflow_dispatch:
 
 jobs:
-  deploy-qradar:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
     steps:
-      - name: Checkout Code
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Set up Python
-      - name: Set-up-Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
       - name: Install Dependencies
-      - name: Install-Requests
         run: pip install requests
 
-      - name: Run Sync Script
-      - name: Run-Script
+      - name: Run QRadar Sync Script
         env:
           QRADAR_URL: ${{ secrets.QRADAR_URL }}
           QRADAR_TOKEN: ${{ secrets.QRADAR_TOKEN }}
+        run: python qradar/sync_qradar.py
