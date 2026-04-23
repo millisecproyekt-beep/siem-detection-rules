@@ -1,12 +1,7 @@
 {
-  "name": "Detect_AdminSDHolder_Tampering",
-  "description": "Active Directory AdminSDHolder obyektinə edilən şübhəli müdaxilələri izləyir (GitHub tərəfindən idarə olunur).",
+  "name": "Detect_New_Admin_Creation",
+  "type": "EVENT",
   "enabled": true,
-  "content": {
-    "aql_query": "SELECT * FROM events WHERE UTF8(payload) ILIKE '%CN=AdminSDHolder,CN=System%' AND (qid = 5136 OR qid = 4662)"
-  },
-  "responses": {
-    "ensure_offense": true,
-    "severity": 10
-  }
+  "origin": "USER",
+  "description": "Active Directory-də yeni admin yaradılmasını izləyir (GitHub-dan yenilənir)."
 }
