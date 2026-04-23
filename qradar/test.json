@@ -1,5 +1,17 @@
 {
-  "name": "Test",
-  "description": "Bu qayda sistemin CI/CD və API idarəetmə mexanizmini yoxlamaq üçün yaradılmışdır.",
-  "enabled": true
+  "name": "Detect_New_Admin_Creation",
+  "type": "EVENT",
+  "enabled": true,
+  "description": "GitHub-dan gələn professional qayda",
+  "tests": [
+    {
+      "test_definition_id": "123", 
+      "parameters": [
+        {
+          "name": "aql_query",
+          "value": "SELECT * FROM events WHERE ..."
+        }
+      ]
+    }
+  ]
 }
