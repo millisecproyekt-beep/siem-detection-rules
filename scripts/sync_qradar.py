@@ -14,7 +14,6 @@ Strategiya:
   4. Match yoxdursa → Warning ver (manual UI-da yaratmaq lazımdır)
 """
 
-
 import os
 import sys
 import json
