@@ -1,17 +1,10 @@
 {
-  "name": "Detect_New_Admin_Creation",
+  "name": "Suspicious Login Attempt",
   "type": "EVENT",
   "enabled": true,
-  "description": "GitHub-dan gələn professional qayda",
-  "tests": [
-    {
-      "test_definition_id": "123", 
-      "parameters": [
-        {
-          "name": "aql_query",
-          "value": "SELECT * FROM events WHERE ..."
-        }
-      ]
-    }
-  ]
+  "owner": "admin",
+  "origin": "USER",
+  "base_host_id": 0,
+  "average_capacity": 0,
+  "capacity_timestamp": 0
 }
