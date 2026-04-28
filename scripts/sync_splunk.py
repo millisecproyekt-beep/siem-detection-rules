@@ -57,4 +57,5 @@ if __name__ == "__main__":
         print("XƏTA: SPLUNK_URL və ya SPLUNK_TOKEN boşdur!")
     else:
         sync_splunk()
-        
+
+
