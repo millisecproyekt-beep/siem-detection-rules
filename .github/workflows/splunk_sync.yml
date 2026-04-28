@@ -1,8 +1,11 @@
-name: Splunk Detection Sync
+name: Splunk-Detection-Sync
+
 on:
   push:
+    # Test mərhələsində 'paths' filtrini müvəqqəti bağlaya bilərsən
+    # Amma qalsın deyirsənsə, mütləq splunk/ qovluğuna fayl at.
     paths:
-      - 'splunk/**'  # Yalnız bu qovluq dəyişəndə tetiklənir
+      - 'splunk/**'
 
 jobs:
   deploy-splunk:
@@ -21,7 +24,7 @@ jobs:
 
       - name: Run Splunk Deploy Script
         env:
-          SPLUNK_HOST: ${{ secrets.SPLUNK_HOST }}
+          # Secret adını SPLUNK_URL etdim (Səndə belə idi)
+          SPLUNK_URL: ${{ secrets.SPLUNK_URL }}
           SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
         run: python scripts/sync_splunk.py
-
