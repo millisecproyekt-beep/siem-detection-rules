@@ -1,31 +1,28 @@
-name: QRadar Detection Sync
+name: Splunk-Sync
 
 on:
   push:
-    branches:
-      - main
     paths:
-      - 'qradar/**'
-  workflow_dispatch:
+      - 'splunk/**'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up Python
+      - name: Set-up-Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - name: Install Dependencies
+      - name: Install-Requests
         run: pip install requests
 
-      - name: Run QRadar Sync Script
+      - name: Run-Splunk-Script
         env:
-          QRADAR_URL: ${{ secrets.QRADAR_URL }}
-          QRADAR_TOKEN: ${{ secrets.QRADAR_TOKEN }}
-        run: python qradar/sync_qradar.py
+          # Secret adlarını sənin şəkildəki adlara uyğunlaşdırdıq
+          SPLUNK_URL: ${{ secrets.SPLUNK_URL }}
+          SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
+        run: python scripts/sync_splunk.py
