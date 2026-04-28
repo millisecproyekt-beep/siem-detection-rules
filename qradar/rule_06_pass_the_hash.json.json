@@ -1,0 +1,5 @@
+{
+  "name": "QRadar_Pass_the_Hash",
+  "aql": "SELECT * FROM events WHERE qid = 4624 AND UTF8(payload) ILIKE '%LogonType=9%'",
+  "description": "Potensial Pass-the-Hash hücumunu aşkarlayır (LogonType 9)."
+}
