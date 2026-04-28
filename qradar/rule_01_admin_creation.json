@@ -1,0 +1,5 @@
+{
+  "name": "Detect_New_Admin_Creation",
+  "description": "Active Directory-də yeni admin yaradılmasını izləyir (GitHub-dan yenilənir).",
+  "aql": "SELECT * FROM events WHERE qid = 4720 OR qid = 4732"
+}

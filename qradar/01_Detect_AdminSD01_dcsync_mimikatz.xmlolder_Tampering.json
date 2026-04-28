@@ -1,7 +1,0 @@
-{
-  "name": "Detect_New_Admin_Creation",
-  "type": "EVENT",
-  "enabled": true,
-  "origin": "USER",
-  "description": "Active Directory-də yeni admin yaradılmasını izləyir (GitHub-dan yenilənir)."
-}
