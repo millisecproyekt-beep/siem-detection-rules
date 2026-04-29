@@ -1,28 +1,25 @@
-name: Splunk Detection Sync
+name: Splunk-Sync-Final
 
-on:
-  push:
-    paths:
-      - 'splunk/**'  # Yalnız bu qovluq dəyişəndə tetiklənir
+on: [push]  # Heç bir filtr yoxdur! Hər push-da mütləq işə düşəcək.
 
 jobs:
-  deploy-splunk:
+  splunk-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
-      - name: Install Dependencies
+      - name: Install Requests
         run: pip install requests
 
-      - name: Run Splunk Deploy Script
+      - name: Run Splunk Script
         env:
-          # Secret adlarını sənin GitHub ayarlarındakı adlara uyğunlaşdırdım
+          # Secret adlarını sənin şəkildəki adlara uyğunlaşdırdım
           SPLUNK_URL: ${{ secrets.SPLUNK_URL }}
           SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
         run: python scripts/sync_splunk.py
