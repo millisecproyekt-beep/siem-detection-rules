@@ -5,29 +5,37 @@ import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# Secret-dən gələn: http://45.55.59.89:8000
-RAW_URL = os.getenv('SPLUNK_URL', '').strip()
+# GitHub Secret-dən gələn məlumatı götürürük
+RAW_INPUT = os.getenv('SPLUNK_URL', '').strip()
 SPLUNK_TOKEN = os.getenv('SPLUNK_TOKEN', '').strip()
 
-# IP-ni təmiz şəkildə çıxarırıq (Məsələn: 45.55.59.89)
-clean_ip = RAW_URL.replace("http://", "").replace("https://", "").split(':')[0]
-# API üçün mütləq 8089 portunu təyin edirik
-API_BASE = f"https://{clean_ip}:8089"
+# BÜTÜN PROBLEM BURADA HƏLL OLUNUR:
+# http, https, slash və köhnə portları təmizləyib yalnız təmiz IP-ni saxlayırıq
+clean_host = RAW_INPUT.replace("https://", "").replace("http://", "").split('/')[0].split(':')[0]
+
+# Splunk API üçün mütləq https və 8089 portu lazımdır
+API_BASE = f"https://{clean_host}:8089"
 
 def sync_splunk():
-    print(f"--- Splunk API Bağlantısı: {API_BASE} ---")
+    print(f"--- Düzgün API Ünvanı: {API_BASE} ---")
+    
     headers = {
         "Authorization": f"Bearer {SPLUNK_TOKEN}",
         "Content-Type": "application/x-www-form-urlencoded"
     }
     
     path = "splunk/"
+    if not os.path.exists(path):
+        print(f"XƏTA: '{path}' qovluğu tapılmadı!")
+        return
+
     for filename in os.listdir(path):
         if filename.endswith(".json"):
             try:
-                with open(os.path.join(path, filename), 'r') as f:
+                with open(os.path.join(path, filename), 'r', encoding='utf-8') as f:
                     rule = json.load(f)
-                    # Splunk API Endpoint
+                    
+                    # API Endpoint (saved/searches)
                     api_url = f"{API_BASE}/services/saved/searches?output_mode=json"
                     
                     payload = {
@@ -37,12 +45,15 @@ def sync_splunk():
                         "disabled": 0
                     }
                     
-                    # 10 saniyə gözləyirik, cavab gəlməsə timeout verəcək
-                    res = requests.post(api_url, data=payload, headers=headers, verify=False, timeout=10)
-                    print(f"✅ {filename} göndərildi. Status: {res.status_code}")
+                    # Göndəririk
+                    res = requests.post(api_url, data=payload, headers=headers, verify=False, timeout=15)
+                    
+                    if res.status_code in [200, 201]:
+                        print(f"✅ UĞURLU: {filename}")
+                    else:
+                        print(f"❌ XƏTA: {filename} (Status: {res.status_code}) - {res.text[:100]}")
             except Exception as e:
-                print(f"❌ {filename} xətası: {str(e)}")
+                print(f"❌ XƏTA ({filename}): {str(e)}")
 
 if __name__ == "__main__":
     sync_splunk()
-
