@@ -1,6 +1,9 @@
-name: Splunk-Detection-Sync
+name: Splunk Detection Sync
 
-on: [push] # Hər push-da işləsin ki, nəticəni görək
+on:
+  push:
+    paths:
+      - 'splunk/**'  # Yalnız bu qovluq dəyişəndə tetiklənir
 
 jobs:
   deploy-splunk:
@@ -19,6 +22,7 @@ jobs:
 
       - name: Run Splunk Deploy Script
         env:
+          # Secret adlarını sənin GitHub ayarlarındakı adlara uyğunlaşdırdım
           SPLUNK_URL: ${{ secrets.SPLUNK_URL }}
           SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
         run: python scripts/sync_splunk.py
