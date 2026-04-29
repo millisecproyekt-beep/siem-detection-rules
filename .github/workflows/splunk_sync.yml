@@ -4,8 +4,6 @@ on:
   push:
     # Test mərhələsində 'paths' filtrini müvəqqəti bağlaya bilərsən
     # Amma qalsın deyirsənsə, mütləq splunk/ qovluğuna fayl at.
-    paths:
-      - 'splunk/**'
 
 jobs:
   deploy-splunk:
